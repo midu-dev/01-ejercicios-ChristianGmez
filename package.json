@@ -1,0 +1,20 @@
+{
+  "name": "ejercicios-nodejs",
+  "version": "1.0.0",
+  "description": "Ejercicios 1 - Node.js",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node ./test/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "standard": "^17.1.0"
+  },
+  "eslintConfig": {
+    "extends": "standard"
+  }
+}
