@@ -1,4 +1,4 @@
-const fs = require('node:fs')
+const fs = require('node:fs/promises')
 const path = require('node:path')
 
 // Ejercicio 2
@@ -7,20 +7,19 @@ async function writeFile (filePath, data, callback) {
 
   // Comprobar que el directorio existe, en caso contrario, crearlo
   try {
-    fs.existsSync(dir) || fs.mkdirSync(dir, { recursive: true })
+    await fs.mkdir(dir, { recursive: true })
   } catch (err) {
     console.log('Error al comprobar/crear el directorio')
     return callback(err)
   }
 
-  // Crear el archivo y escribir el texto
-  fs.writeFile(filePath, data, (err) => {
-    if (err) {
-      console.log('Error al crear el archivo')
-      return callback(err)
-    }
-    return callback(null, data)
-  })
+  try {
+    await fs.writeFile(filePath, data)
+    callback()
+  } catch (err) {
+    console.log('Error al crear el archivo')
+    return callback(err)
+  }
 }
 
 // Ejercicio 3
@@ -30,13 +29,20 @@ async function readFileAndCount (word, callback) {
   // Comprobar que se ha especificado la palabra, el path del archivo y que exista
   if (!word) { return callback(new Error('No se ha especificado la palabra a buscar')) }
   if (!filePath) { return callback(new Error('No se ha especificado el path del archivo')) }
-  if (!fs.existsSync(filePath)) { return callback(null, 0) }
 
-  const content = fs.readFileSync(filePath, 'utf8', err => {
-    if (err) { return callback(err) }
-  })
+  try {
+    await fs.access(filePath)
+  } catch (err) {
+    return callback(null, 0)
+  }
 
-  callback(null, content.split(word).length - 1)
+  try {
+    const content = await fs.readFile(filePath, 'utf8')
+    const count = content.split(word).length - 1
+    return callback(null, count)
+  } catch (err) {
+    return callback(err)
+  }
 }
 
 module.exports = {
